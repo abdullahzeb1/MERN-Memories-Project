@@ -9,9 +9,9 @@ import useStyles from './styles.js';
 import memories from './images/memories.png';
 
 const App = () => {
-  const [currentId, setCurrentId] = useState(null);
-  const classes = useStyles();
+  const [currentId, setCurrentId] = useState(0);
   const dispatch = useDispatch();
+  const classes = useStyles();
 
   useEffect(() => {
     debugger;
@@ -24,18 +24,13 @@ const App = () => {
         <Typography className={classes.heading} variant='h2' align='center'>
           Memories
         </Typography>
-        <img
-          className={classes.image}
-          src={memories}
-          alt='memories'
-          height='60'
-        />
+        <img className={classes.image} src={memories} alt='icon' height='60' />
       </AppBar>
       <Grow in>
         <Container>
           <Grid
             container
-            justifyContent='space-between'
+            justify='space-between'
             alignItems='stretch'
             spacing={3}
           >

@@ -15,27 +15,37 @@ const Form = ({ currentId, setCurrentId }) => {
     selectedFile: '',
   });
   const post = useSelector((state) =>
-    currentId ? state.posts.find((p) => (p._id = currentId)) : null
+    currentId ? state.posts.find((message) => message._id === currentId) : null
   );
-
-  const classes = useStyles();
   const dispatch = useDispatch();
+  const classes = useStyles();
 
   useEffect(() => {
     if (post) setPostData(post);
   }, [post]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (currentId) {
-      dispatch(updatePost(currentId, postData));
-    } else {
-      dispatch(createPost(postData));
-    }
+  const clear = () => {
+    setCurrentId(0);
+    setPostData({
+      creator: '',
+      title: '',
+      message: '',
+      tags: '',
+      selectedFile: '',
+    });
   };
 
-  const clear = () => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (currentId === 0) {
+      dispatch(createPost(postData));
+      clear();
+    } else {
+      dispatch(updatePost(currentId, postData));
+      clear();
+    }
+  };
 
   return (
     <Paper className={classes.paper}>
@@ -45,7 +55,9 @@ const Form = ({ currentId, setCurrentId }) => {
         className={`${classes.root} ${classes.form}`}
         onSubmit={handleSubmit}
       >
-        <Typography variant='h6'>Creating a Memory</Typography>
+        <Typography variant='h6'>
+          {currentId ? `Editing "${post.title}"` : 'Creating a Memory'}
+        </Typography>
         <TextField
           name='creator'
           variant='outlined'
@@ -69,6 +81,8 @@ const Form = ({ currentId, setCurrentId }) => {
           variant='outlined'
           label='Message'
           fullWidth
+          multiline
+          rows={4}
           value={postData.message}
           onChange={(e) =>
             setPostData({ ...postData, message: e.target.value })
@@ -77,10 +91,12 @@ const Form = ({ currentId, setCurrentId }) => {
         <TextField
           name='tags'
           variant='outlined'
-          label='Tags'
+          label='Tags (coma separated)'
           fullWidth
           value={postData.tags}
-          onChange={(e) => setPostData({ ...postData, tags: e.target.value })}
+          onChange={(e) =>
+            setPostData({ ...postData, tags: e.target.value.split(',') })
+          }
         />
         <div className={classes.fileInput}>
           <FileBase
@@ -93,7 +109,7 @@ const Form = ({ currentId, setCurrentId }) => {
         </div>
         <Button
           className={classes.buttonSubmit}
-          variant='container'
+          variant='contained'
           color='primary'
           size='large'
           type='submit'
